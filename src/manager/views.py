@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView
@@ -15,7 +15,7 @@ class BookView(View):
 
 class AddLikeView(View):
     def get(self, request, book_id):
-        book = Book.objects.filter(id=book_id)[0]
+        book = Book.objects.get(id=book_id)
         book.likes += 1
         book.save()
-        return reverse('list_view')
+        return redirect('list_view')
