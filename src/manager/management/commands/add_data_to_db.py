@@ -23,7 +23,6 @@ class Command(BaseCommand):
 
         for book in Book.objects.all():
             book.authors.add(users[0], users[2])
-            book.save()
 
 
 
