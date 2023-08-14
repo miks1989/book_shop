@@ -1,5 +1,13 @@
-from django.forms import Form
+from django.forms import ModelForm, TextInput, Textarea
+
+from manager.models import Book
 
 
-class AddBookForm(Form):
-    pass
+class AddBookForm(ModelForm):
+    class Meta:
+        model = Book
+        fields = ("title", "text")
+        widgets = {
+            'title': TextInput(attrs={'class': "form-control"}),
+            "text": Textarea(attrs={'class': "form-control"})
+        }
