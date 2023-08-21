@@ -4,13 +4,17 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.db.models import Count, Prefetch
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import cache_page
 from django.views.generic import ListView
 
 from manager.forms import AddBookForm
 from manager.models import Book, Comment
+from manager.tasks import send_emails
 
 
+@method_decorator(cache_page(5), name='dispatch')
 class BookView(View):
 
     def get(self, request):
@@ -67,6 +71,7 @@ class AddBook(View):
             if book_form.is_valid():
                 book: Book = book_form.save()
                 book.authors.add(request.user)
+                send_emails.delay(10)
             return redirect('detail_book', book_id=book.id)
         return redirect('list_view')
 
