@@ -14,7 +14,9 @@ services:
       - db_keys.txt
     depends_on:
       - db
-    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+
+#    command: bash -c "python manage.py runserver 0.0.0.0:8000"
 #    command: bash -c "gunicorn -w 9 src.wsgi:application -b 0.0.0.0:8000"
 
 
@@ -26,5 +28,38 @@ services:
       - db_keys.txt
     volumes:
       - ./backups:/backups
+      - ./init-scripts:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
+
+
+
+  redis_sel:
+    image: redis:latest
+    container_name: redis_db_1
+
+
+  rabbit:
+    hostname: rabbit
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  selery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: celery_w_tms
+    volumes:
+      - ./src:/src
+    ports:
+      - 5555:5555
+#    env_file:
+#      #      - db_keys_for_local.txt
+#      - db_keys_for_sand.txt
+#    command: celery -A first worker -c 5 -l info -B -E
+    command: bash -c "celery -A src worker -c 5 -l info -B"

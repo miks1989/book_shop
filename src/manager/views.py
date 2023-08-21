@@ -4,15 +4,18 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.db.models import Count, Prefetch
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import cache_page
 from django.views.generic import ListView
 
 from manager.forms import AddBookForm
 from manager.models import Book, Comment
 
 
+@method_decorator(cache_page(20), name='dispatch')
 class BookView(View):
-
+    # @cache_page(5)
     def get(self, request):
         comments_for_prefetch = Prefetch('comments',
                                          queryset=Comment.objects.
