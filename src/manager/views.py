@@ -1,3 +1,5 @@
+from time import sleep
+
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
@@ -14,7 +16,7 @@ from manager.models import Book, Comment
 from manager.tasks import send_emails
 
 
-@method_decorator(cache_page(5), name='dispatch')
+# @method_decorator(cache_page(5), name='dispatch')
 class BookView(View):
 
     def get(self, request):
@@ -23,6 +25,8 @@ class BookView(View):
                                          select_related('user').
                                          annotate(likes_comment=Count('likes'))
                                          )
+        sleep(1)
+        print('hello')
         data = {'books': Book.objects.
         prefetch_related(comments_for_prefetch, 'authors').all().order_by('-count_likes', 'date')
                 # annotate(likes_book=Count('likes'))

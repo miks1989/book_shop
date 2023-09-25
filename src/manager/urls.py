@@ -3,10 +3,13 @@ from django.urls import path
 
 from manager.views import (BookView, AddLikeView, DetailBook, AddBook,
                            delete_book, UpdateBook, Login, logout_func, Register)
+from manager.views_ajax import add_like_ajax
 
 urlpatterns = [
     path('', BookView.as_view(), name='list_view'),
+    path('asd/', BookView.as_view(), name='list_view'),
     path('add_like/<int:book_id>/<int:location>/', AddLikeView.as_view(), name='add_like'),
+    path('add_like_ajax/', add_like_ajax),
     path('detail_book/<int:book_id>/', DetailBook.as_view(), name='detail_book'),
     path('add_book/', AddBook.as_view(), name='add_book'),
     path('delete_book/<int:book_id>/', delete_book, name='delete_book'),
